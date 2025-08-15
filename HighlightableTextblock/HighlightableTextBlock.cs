@@ -1,4 +1,15 @@
-﻿using System;
+#if NETSTANDARD2_0 || NETSTANDARD2_1
+namespace HighlightableTextBlock
+{
+    /// <summary>
+    /// Placeholder implementation for platforms without WPF support.
+    /// </summary>
+    public class HighlightableTextBlock
+    {
+    }
+}
+#else
+using System;
 using System.ComponentModel;
 using System.Text.RegularExpressions;
 using System.Windows;
@@ -10,8 +21,10 @@ namespace HighlightableTextBlock
 {
     public class HighlightableTextBlock
     {
-        #region Bold
+        private static readonly DependencyPropertyDescriptor TextPropertyDescriptor =
+            DependencyPropertyDescriptor.FromProperty(TextBlock.TextProperty, typeof(TextBlock));
 
+        #region Bold
         public static bool GetBold(DependencyObject obj)
         {
             return (bool)obj.GetValue(BoldProperty);
@@ -22,14 +35,11 @@ namespace HighlightableTextBlock
             obj.SetValue(BoldProperty, value);
         }
 
-        // Using a DependencyProperty as the backing store for Bold.  This enables animation, styling, binding, etc...
         public static readonly DependencyProperty BoldProperty =
             DependencyProperty.RegisterAttached("Bold", typeof(bool), typeof(HighlightableTextBlock), new PropertyMetadata(false, Refresh));
-
         #endregion
 
         #region Italic
-
         public static bool GetItalic(DependencyObject obj)
         {
             return (bool)obj.GetValue(ItalicProperty);
@@ -40,14 +50,11 @@ namespace HighlightableTextBlock
             obj.SetValue(ItalicProperty, value);
         }
 
-        // Using a DependencyProperty as the backing store for Italic.  This enables animation, styling, binding, etc...
         public static readonly DependencyProperty ItalicProperty =
             DependencyProperty.RegisterAttached("Italic", typeof(bool), typeof(HighlightableTextBlock), new PropertyMetadata(false, Refresh));
-
         #endregion
 
         #region Underline
-
         public static bool GetUnderline(DependencyObject obj)
         {
             return (bool)obj.GetValue(UnderlineProperty);
@@ -58,14 +65,11 @@ namespace HighlightableTextBlock
             obj.SetValue(UnderlineProperty, value);
         }
 
-        // Using a DependencyProperty as the backing store for Underline.  This enables animation, styling, binding, etc...
         public static readonly DependencyProperty UnderlineProperty =
             DependencyProperty.RegisterAttached("Underline", typeof(bool), typeof(HighlightableTextBlock), new PropertyMetadata(false, Refresh));
-
         #endregion
 
         #region HighlightTextBrush
-
         public static Brush GetHighlightTextBrush(DependencyObject obj)
         {
             return (Brush)obj.GetValue(HighlightTextBrushProperty);
@@ -76,14 +80,11 @@ namespace HighlightableTextBlock
             obj.SetValue(HighlightTextBrushProperty, value);
         }
 
-        // Using a DependencyProperty as the backing store for HighlightTextBrush.  This enables animation, styling, binding, etc...
         public static readonly DependencyProperty HighlightTextBrushProperty =
             DependencyProperty.RegisterAttached("HighlightTextBrush", typeof(Brush), typeof(HighlightableTextBlock), new PropertyMetadata(SystemColors.HighlightTextBrush, Refresh));
-
         #endregion
 
         #region HighlightBrush
-
         public static Brush GetHighlightBrush(DependencyObject obj)
         {
             return (Brush)obj.GetValue(HighlightBrushProperty);
@@ -94,14 +95,11 @@ namespace HighlightableTextBlock
             obj.SetValue(HighlightBrushProperty, value);
         }
 
-        // Using a DependencyProperty as the backing store for HighlightBrush.  This enables animation, styling, binding, etc...
         public static readonly DependencyProperty HighlightBrushProperty =
             DependencyProperty.RegisterAttached("HighlightBrush", typeof(Brush), typeof(HighlightableTextBlock), new PropertyMetadata(SystemColors.HighlightBrush, Refresh));
-
         #endregion
 
         #region HighlightText
-
         public static string GetHightlightText(DependencyObject obj)
         {
             return (string)obj.GetValue(HightlightTextProperty);
@@ -112,14 +110,11 @@ namespace HighlightableTextBlock
             obj.SetValue(HightlightTextProperty, value);
         }
 
-        // Using a DependencyProperty as the backing store for HightlightText.  This enables animation, styling, binding, etc...
         public static readonly DependencyProperty HightlightTextProperty =
             DependencyProperty.RegisterAttached("HightlightText", typeof(string), typeof(HighlightableTextBlock), new PropertyMetadata(string.Empty, Refresh));
-
         #endregion
 
         #region InternalText
-
         protected static string GetInternalText(DependencyObject obj)
         {
             return (string)obj.GetValue(InternalTextProperty);
@@ -130,26 +125,20 @@ namespace HighlightableTextBlock
             obj.SetValue(InternalTextProperty, value);
         }
 
-        // Using a DependencyProperty as the backing store for InternalText.  This enables animation, styling, binding, etc...
         protected static readonly DependencyProperty InternalTextProperty =
-            DependencyProperty.RegisterAttached("InternalText", typeof(string),
-                typeof(HighlightableTextBlock), new PropertyMetadata(string.Empty, OnInternalTextChanged));
+            DependencyProperty.RegisterAttached("InternalText", typeof(string), typeof(HighlightableTextBlock), new PropertyMetadata(string.Empty, OnInternalTextChanged));
 
         private static void OnInternalTextChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
-            var textblock = d as TextBlock;
-
-            if (textblock != null)
+            if (d is TextBlock textblock)
             {
                 textblock.Text = e.NewValue as string;
                 Highlight(textblock);
             }
         }
-
         #endregion
 
-        #region  IsBusy 
-
+        #region  IsBusy
         private static bool GetIsBusy(DependencyObject obj)
         {
             return (bool)obj.GetValue(IsBusyProperty);
@@ -160,57 +149,48 @@ namespace HighlightableTextBlock
             obj.SetValue(IsBusyProperty, value);
         }
 
-        // Using a DependencyProperty as the backing store for IsBusy.  This enables animation, styling, binding, etc...
         private static readonly DependencyProperty IsBusyProperty =
             DependencyProperty.RegisterAttached("IsBusy", typeof(bool), typeof(HighlightableTextBlock), new PropertyMetadata(false));
-
         #endregion
 
         #region Methods
-
         private static void Refresh(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
             Highlight(d as TextBlock);
         }
 
-        private static void Highlight(TextBlock textblock)
+        private static void Highlight(TextBlock? textblock)
         {
             if (textblock == null) return;
 
-            string text = textblock.Text;
+            var text = textblock.Text;
 
-            if (textblock.GetBindingExpression(HighlightableTextBlock.InternalTextProperty) == null)
+            if (textblock.GetBindingExpression(InternalTextProperty) == null)
             {
                 var textBinding = textblock.GetBindingExpression(TextBlock.TextProperty);
 
                 if (textBinding != null)
                 {
-                    textblock.SetBinding(HighlightableTextBlock.InternalTextProperty, textBinding.ParentBindingBase);
-
-                    var propertyDescriptor = DependencyPropertyDescriptor.FromProperty(TextBlock.TextProperty, typeof(TextBlock));
-
-                    propertyDescriptor.RemoveValueChanged(textblock, OnTextChanged);
+                    textblock.SetBinding(InternalTextProperty, textBinding.ParentBindingBase);
+                    TextPropertyDescriptor.RemoveValueChanged(textblock, OnTextChanged);
                 }
                 else
                 {
-                    var propertyDescriptor = DependencyPropertyDescriptor.FromProperty(TextBlock.TextProperty, typeof(TextBlock));
-
-                    propertyDescriptor.AddValueChanged(textblock, OnTextChanged);
-
+                    TextPropertyDescriptor.AddValueChanged(textblock, OnTextChanged);
                     textblock.Unloaded -= Textblock_Unloaded;
                     textblock.Unloaded += Textblock_Unloaded;
                 }
             }
 
-            if (!String.IsNullOrEmpty(text))
+            if (!string.IsNullOrEmpty(text))
             {
                 SetIsBusy(textblock, true);
 
                 var toHighlight = GetHightlightText(textblock);
 
-                if (!String.IsNullOrEmpty(toHighlight))
+                if (!string.IsNullOrEmpty(toHighlight))
                 {
-                    var matches = Regex.Split(text, String.Format("({0})", Regex.Escape(toHighlight)), RegexOptions.IgnoreCase);
+                    var matches = Regex.Split(text, $"({Regex.Escape(toHighlight)})", RegexOptions.IgnoreCase);
 
                     textblock.Inlines.Clear();
 
@@ -219,7 +199,7 @@ namespace HighlightableTextBlock
 
                     foreach (var subString in matches)
                     {
-                        if (String.Compare(subString, toHighlight, true) == 0)
+                        if (string.Equals(subString, toHighlight, StringComparison.OrdinalIgnoreCase))
                         {
                             var formattedText = new Run(subString)
                             {
@@ -262,22 +242,17 @@ namespace HighlightableTextBlock
 
         private static void Textblock_Unloaded(object sender, RoutedEventArgs e)
         {
-            var propertyDescriptor = DependencyPropertyDescriptor.FromProperty(TextBlock.TextProperty, typeof(TextBlock));
-
-            propertyDescriptor.RemoveValueChanged(sender as TextBlock, OnTextChanged);
+            TextPropertyDescriptor.RemoveValueChanged(sender as TextBlock, OnTextChanged);
         }
 
-        private static void OnTextChanged(object sender, EventArgs e)
+        private static void OnTextChanged(object? sender, EventArgs e)
         {
-            var textBlock = sender as TextBlock;
-
-            if (textBlock != null &&
-                !GetIsBusy(textBlock))
+            if (sender is TextBlock textBlock && !GetIsBusy(textBlock))
             {
                 Highlight(textBlock);
             }
         }
-
         #endregion
     }
 }
+#endif

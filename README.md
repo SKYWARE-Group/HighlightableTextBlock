@@ -22,3 +22,12 @@ After installing HighlightableTextBlock:
   * Bold - controls:HighlightableTextBlock.Bold="True"
   * Italic - controls:HighlightableTextBlock.Italic="True"
   * Underline - controls:HighlightableTextBlock.Underline="True"
+
+## Target Frameworks
+
+The library is built for the following target frameworks:
+
+- `netstandard2.0`
+- `netstandard2.1`
+- `net8.0-windows`
+- `net9.0-windows`
