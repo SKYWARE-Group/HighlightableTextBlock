@@ -1,22 +1,28 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
+  
   <PropertyGroup>
-    <TargetFrameworks>netstandard2.0;netstandard2.1;net8.0-windows;net9.0-windows</TargetFrameworks>
-    <UseWPF Condition="'$(TargetFramework)' == 'net8.0-windows' or '$(TargetFramework)' == 'net9.0-windows'">true</UseWPF>
+    <TargetFrameworks>net8.0-windows;net9.0-windows</TargetFrameworks>
+    <LangVersion>latest</LangVersion>
+    <UseWPF>true</UseWPF>
     <AssemblyName>HighlightableTextBlock</AssemblyName>
     <RootNamespace>HighlightableTextBlock</RootNamespace>
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
+    <!-- Suppress missing XML comment warnings -->
+    <NoWarn>1591</NoWarn>
     <PackageId>HighlightableTextBlock</PackageId>
-    <Version>1.0.1.1</Version>
-    <Authors>Kevin Hsu</Authors>
+    <Version>1.0.0</Version>
+    <Authors>Kevin Hsu, Mikhail Kalatchev</Authors>
     <Company>Kevin Hsu</Company>
     <Description>Awesome highlighting add-on for WPF TextBlock</Description>
     <PackageTags>wpf highlight textblock text xaml</PackageTags>
     <RepositoryUrl>https://github.com/kthsu/HighlightableTextblock</RepositoryUrl>
     <PackageLicenseFile>../License.md</PackageLicenseFile>
   </PropertyGroup>
+  
   <ItemGroup>
     <None Include="../License.md" Pack="true" PackagePath="" />
   </ItemGroup>
+  
 </Project>

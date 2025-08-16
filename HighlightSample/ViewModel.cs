@@ -1,28 +1,40 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Prism.Mvvm;
+﻿using System.Collections.Generic;
+using System.ComponentModel;
+using System.Runtime.CompilerServices;
 
-namespace HighlightSample
+namespace HighlightSample;
+
+public class ViewModel : INotifyPropertyChanged
 {
-    public class ViewModel : BindableBase
+    private string? filter;
+    private string? fullText;
+
+    public string? Filter
     {
-        private string filter;
-        private string fullText;
+        get => filter;
+        set => SetProperty(ref filter, value);
+    }
 
-        public string Filter
-        {
-            get { return filter; }
-            set { SetProperty(ref this.filter, value); }
-        }        
+    public string? FullText
+    {
+        get => fullText;
+        set => SetProperty(ref fullText, value);
+    }
 
-        public string FullText
+    public event PropertyChangedEventHandler? PropertyChanged;
+
+    protected virtual void OnPropertyChanged(string propertyName) =>
+        PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+
+    protected bool SetProperty<T>(ref T storage, T value, [CallerMemberName] string? propertyName = null)
+    {
+        if (EqualityComparer<T>.Default.Equals(storage, value))
         {
-            get { return fullText; }
-            set { SetProperty(ref this.fullText, value); }
+            return false;
         }
 
+        storage = value;
+        OnPropertyChanged(propertyName!);
+        return true;
     }
 }
